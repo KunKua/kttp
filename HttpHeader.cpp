@@ -139,28 +139,133 @@ static const char* isKnownHeader(const char* hdr)
 }
 
 HttpHeader::HttpHeader()
+:_num(0)
+,_size(HEADER_BASE)
 {
-
+	_header = (char**)malloc(sizeof(char*) * HEADER_BASE);
+	_value = (char**)malloc(sizeof(char*) * HEADER_BASE);
 }
 
 HttpHeader::~HttpHeader()
 {
+	int i = 0;
+	for(;i < _num; i++) {
+		if(_header[i] != NULL && isKnownHeader(_header[i]) == NULL) {
+			free(_header[i]);
+		}
+		if(_value[i] != NULL) {
+			free(_value[i]);
+		}
+	}
+	
+	_size = 0;
+	_num = 0;
+	if(_header) free(_header);
+	if(_value) free(_value);
+}
 
+void HttpHeader::checkSize()
+{
+	if(_num < _size) return;
+	
+	_size += HEADER_INCREMENT;
+    _header = realloc(_header, _size);
+	_value = realloc(_value, _size);
 }
 
 int HttpHeader::set(const char* name, const char* value)
 {
+	if(name == NULL || value == NULL) {
+		return NULL;
+	}
+	
+	int i = 0;
+	int result = 0;
+	char* tmpValue;
 
+	tmpValue = get(name);
+	if(tmpValue == NULL)
+	{
+		checkSize();
+
+		for(i = 0 ; i< _num; i++) {
+			if(_header[i] == NULL) break;
+		}
+
+		tmpValue = isKnownHeader(name);
+		if(tmpValue) {
+			_header[i] = tmpValue;
+		} else {
+			_header[i] = strdup(name);
+		}
+		_value[i] = strdup(value);
+		if(i == _num) _num++;
+		result = 1;
+	}
+	else
+   	{
+		for(i = 0; i < _num; i++)
+		{
+			if(_value[i] == tmpValue) {
+				free(_value[i]);
+				_value[i] = strdup(value);
+				result = 1;
+				break;
+			}
+		}
+	}
+
+	return result;
 }
 
 char* HttpHeader::get(const char* name)
 {
+	if(name == NULL) {
+		return NULL;
+	}
 
+	int i;
+	char* tmp;
+	char* result = NULL;
+
+	for(i = 0; i < _num; i++) {
+		tmp = _header[i];
+		if(strcasecmp(tmp,name) == 0) {
+			result = tmp;
+			break;
+		}
+	}
+	
+	return result;
 }
 
 int HttpHeader::clear(const char* name)
 {
+	if(name == NULL) {
+		return NULL;
+	}
 
+	int i;
+	char* tmp;
+	int result = 0;
+	
+	for(i = 0; i < _num; i++)
+	{
+		tmp = _header[i];
+		if(strcasecmp(tmp,name) == 0)
+		{
+			if(isKnownHeader(name) == NULL) {
+				free(_header[i]);
+			}
+			_header[i] = NULL;
+			free(_value[i])
+			_value[i] = NULL;
+			result = 1;
+			break;
+		}
+	}
+
+	return result;
 }
 
 }

@@ -13,6 +13,8 @@ public:
 	char* get(const char* name);
 	int clear(const char* name);
 private:
+	void checkSize();
+private:
 	char** _header;
 	char** _value;
 

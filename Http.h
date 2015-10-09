@@ -2,7 +2,6 @@
 #define HTTP_H
 
 #include <sys/socket.h>
-#include "Crypto.h"
 
 #define SAFE_DELETE(p)           do { delete (p); (p) = nullptr; } while(0)
 #define SAFE_DELETE_ARRAY(p)     do { if(p) { delete[] (p); (p) = nullptr; } } while(0)
@@ -40,20 +39,6 @@ class Http
 public:
 	static Data* get(const char* url,Data& requestData,int retryNum);
 	static Data* post(const char* url,Data& requestData,int retryNum);
-
-	class Uri
-	{
-		char*            _full;                          /* full URL */
-		char*            _proto;                         /* protocol */
-		char*            _host;                          /* copy semantics */
-		unsigned short   _port;
-		char*            _resource;
-	public:
-		Uri();
-		~Uri();
-		static Uri* parse(const char* url);
-
-	};
 
 private:
 	int sockfd;
