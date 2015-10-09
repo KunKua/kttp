@@ -1,4 +1,4 @@
-#include "http.h"
+#include "Http.h"
 
 #include <stdio.h>
 
@@ -17,6 +17,15 @@
 #define IPSTR "61.147.124.120"
 #define PORT 80
 #define BUFSIZE 1024
+
+Http::Http()
+{
+}
+
+Http::~Http()
+{
+}
+
 
 Http::get(const char* url,Data& requestData,int retryNum)
 {

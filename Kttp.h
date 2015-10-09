@@ -9,4 +9,10 @@
 #define SAFE_RETAIN(p)           do { if(p) { (p)->retain(); } } while(0)
 #define BREAK_IF(cond)           if(cond) break
 
+#include "Http.h"
+#include "HttpHeader.h"
+#include "HttpRequest.h"
+#include "HttpUri.h"
+
+
 #endif
